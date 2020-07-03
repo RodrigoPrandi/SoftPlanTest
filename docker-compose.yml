@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+  proxy:
+    container_name: nginx-gateway
+    image: nginx-gateway
+    build:
+      context: .
+    ports:
+      - "80:80"
+    depends_on:
+      - calculajurosapi
+      - taxajurosapi
+    networks:
+      - nasa-network
+
+  calculajurosapi:
+    container_name: calculajurosapi
+    image: 31071989/calculajurosapi:latest
+    environment:
+      - UrlTaxaJuros=taxajurosapi
+    ports:
+      - "44341:80"
+    networks:
+      - nasa-network
+    depends_on:
+      - taxajurosapi
+
+  taxajurosapi:
+    container_name: taxajurosapi
+    image: 31071989/taxajurosapi:latest
+    ports:
+      - "44342:80"
+    networks:
+      - nasa-network
+
+networks: 
+    nasa-network:
+      driver: bridge
